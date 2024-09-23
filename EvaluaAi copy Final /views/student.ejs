@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/student-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, <%= user.username %></h1>
+        
+        <div class="button-container">
+            <a href="/student/view-scores" class="button">
+                <i data-feather="bar-chart-2"></i> View Scores
+            </a>
+            <a href="/logout" class="button">
+                <i data-feather="log-out"></i> Logout
+            </a>
+        </div>
+
+        <div id="testList">
+            <h2>Available Tests</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test ID</th>
+                        <th>Subject</th>
+                        <th>Duration</th>
+                        <th>Questions</th>
+                        <th>Test Code</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="testTableBody">
+                    <!-- Test data will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function fetchLiveTests() {
+            fetch('/student/live-tests')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const testTableBody = document.getElementById('testTableBody');
+                        testTableBody.innerHTML = '';
+                        data.tests.forEach(test => {
+                            const row = document.createElement('tr');
+                            const isAttempted = data.attemptedTests.includes(test._id);
+                            row.innerHTML = `
+                                <td>${test._id}</td>
+                                <td>${test.subject}</td>
+                                <td>${test.duration} minutes</td>
+                                <td>${test.questionCount}</td>
+                                <td>
+                                    <input type="text" class="test-code-input" placeholder="Enter test code" data-testid="${test._id}" ${isAttempted ? 'disabled' : ''}>
+                                </td>
+                                <td>
+                                    <button class="button start-test-button" onclick="verifyAndStartTest('${test._id}')" ${isAttempted ? 'disabled' : ''}>
+                                        <i data-feather="${isAttempted ? 'check' : 'play'}"></i> ${isAttempted ? 'Attempted' : 'Start Test'}
+                                    </button>
+                                </td>
+                            `;
+                            if (isAttempted) {
+                                row.classList.add('attempted-test');
+                            }
+                            testTableBody.appendChild(row);
+                        });
+                        feather.replace();
+                    } else {
+                        console.error('Failed to fetch live tests:', data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function verifyAndStartTest(testId) {
+            const codeInput = document.querySelector(`input[data-testid="${testId}"]`);
+            const testCode = codeInput.value.trim();
+            
+            if (!testCode) {
+                showMessage('Please enter the test code', 'error');
+                return;
+            }
+
+            fetch('/student/verify-test-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ testId, code: testCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Test code verified. Starting test...', 'success');
+                    // Wait for 2 seconds before redirecting
+                    setTimeout(() => {
+                        window.location.href = `/student/start-test/${data.testId.replace('#', '')}`;
+                    }, 2000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('An error occurred while verifying the test code', 'error');
+            });
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            
+            // Clear the message after 2 seconds only if it's an error message
+            if (type === 'error') {
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                    messageDiv.className = '';
+                }, 2000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchLiveTests();
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

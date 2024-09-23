@@ -1,0 +1,138 @@
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #ff9900;
+    color: #000;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none;
+}
+
+.button:hover {
+    background-color: #ff6600;
+}
+
+.button:active {
+    background-color: #e65c00;
+}
+
+.button svg {
+    width: 18px;
+    height: 18px;
+}
+
+#testList {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+tr {
+    background-color: #2a2a2a;
+}
+
+th {
+    background-color: #333;
+    color: #ff9900;
+}
+
+tr:hover {
+    background-color: #3a3a3a;
+}
+
+.test-code-input {
+    width: calc(100% - 20px);
+    padding: 8px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.start-test-button {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+#message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#message.error {
+    background-color: #ff4444;
+    color: #fff;
+}
+
+#message.success {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.attempted-test {
+    background-color: #2a2a2a;
+}
+
+.attempted-test .start-test-button {
+    background-color: #4CAF50;
+    cursor: not-allowed;
+}
+
+.attempted-test .start-test-button:hover {
+    background-color: #4CAF50;
+}

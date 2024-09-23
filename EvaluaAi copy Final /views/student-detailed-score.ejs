@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Score - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/student-detailed-score-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Detailed Test Score</h1>
+        
+        <div class="test-info">
+            <h2><%= test.subject %> Test</h2>
+            <p><strong>Test ID:</strong> <%= testId %></p>
+            <p><strong>Attempted At:</strong> <%= new Date(attemptedAt).toLocaleString() %></p>
+            <p><strong>Total Score:</strong> <%= totalScore %> / <%= test.questionCount * 10 %></p>
+        </div>
+
+        <div class="question-list">
+            <% test.questions.forEach((question, index) => { %>
+                <div class="question">
+                    <h3>Question <%= index + 1 %>:</h3>
+                    <p><%= question %></p>
+                    <div class="answer">
+                        <strong>Your Answer:</strong>
+                        <p><%= answers[index] %></p>
+                    </div>
+                    <p class="score <%= scores[index] >= 6 ? 'high-score' : 'low-score' %>">
+                        Score: <%= scores[index] %> / 10
+                    </p>
+                </div>
+            <% }); %>
+        </div>
+
+        <a href="/student/view-scores" class="button">
+            <i data-feather="arrow-left"></i> Back to Scores
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

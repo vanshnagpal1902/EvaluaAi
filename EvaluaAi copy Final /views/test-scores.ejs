@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Scores - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/test-scores-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Scores</h1>
+        <div class="test-info">
+            <h2><%= test.subject %> Test</h2>
+            <p><strong>Test ID:</strong> <%= testId %></p>
+            <p><strong>Duration:</strong> <%= test.duration %> minutes</p>
+            <p><strong>Number of Questions:</strong> <%= test.questionCount %></p>
+            <p><strong>Students Attempted:</strong> <%= Object.keys(testScores).length %></p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Total Score</th>
+                    <th>Submission Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const [studentName, scoreData] of Object.entries(testScores)) { %>
+                    <tr>
+                        <td><%= studentName %></td>
+                        <td><%= scoreData.scores.reduce((a, b) => a + b, 0) %> / <%= test.questionCount * 10 %></td>
+                        <td><%= new Date(scoreData.submittedAt).toLocaleString() %></td>
+                        <td class="button-group">
+                            <a href="/teacher/student-answers/<%= encodeURIComponent(testId) %>/<%= studentName %>" class="button">
+                                <i data-feather="eye"></i> View Answers
+                            </a>
+                            <button class="button send-score-button" onclick="sendScore('<%= testId %>', '<%= studentName %>', this)" <%= scoreData.scoreSent ? 'disabled' : '' %>>
+                                <i data-feather="send"></i> <%= scoreData.scoreSent ? 'Score Sent' : 'Send Score' %>
+                            </button>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <br>
+        <a href="/teacher" class="button">
+            <i data-feather="arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <script>
+        function sendScore(testId, studentName, button) {
+            fetch('/teacher/send-score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ testId, studentName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.innerHTML = '<i data-feather="check"></i> Score Sent';
+                    button.disabled = true;
+                    button.classList.add('sent');
+                    feather.replace();
+                } else {
+                    alert('Failed to send score: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the score');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
