@@ -1,149 +1,100 @@
-# **AI-Based Quiz Platform**
 
-## **Table of Contents**
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Running the Application](#running-the-application)
-- [Folder Structure](#folder-structure)
-- [API Routes](#api-routes)
-- [Environment Variables](#environment-variables)
-- [Future Improvements](#future-improvements)
-- [Contributing](#contributing)
-- [License](#license)
+# AI-Based Test Platform 📝🤖
 
----
+## Project Description
+The **AI-Based Test Platform** is an innovative web application designed to streamline the process of creating, managing, and evaluating subjective tests using artificial intelligence. This platform empowers teachers to easily create tests, assign them to students, and let AI handle the evaluation of complex subjective answers, saving time and ensuring consistent and accurate grading.
 
-## **Project Overview**
-The AI-Based Quiz Platform is a web application designed for teachers and students to streamline the process of creating and taking quizzes. The platform allows teachers to create tests, add subjective questions, and automatically evaluate student answers using AI technology. Students can access live tests, submit answers, and view scores once the teacher releases them. The platform uses Google Generative AI for evaluating subjective questions and provides real-time scoring.
+### Why This Platform?
+Traditional test platforms are primarily focused on objective assessments like multiple-choice questions, while evaluating subjective questions demands extensive manual review. This platform addresses that gap by integrating **Google Generative AI** for automated grading, providing quick and unbiased evaluations for open-ended answers. With role-based access control (RBAC), the platform offers a secure and efficient way for teachers, students, and administrators to collaborate.
 
-## **Features**
-1. **Role-Based Access Control (RBAC):**
-   - Admin, Teacher, and Student roles with different privileges.
-2. **Authentication and Authorization:**
-   - JWT-based authentication for secure user sessions.
-3. **Teacher Functionality:**
-   - Create and manage tests.
-   - Add subjective questions (up to 10 per test).
-   - View, edit, and toggle test availability.
-   - Evaluate student submissions using AI.
-   - View and release scores to students.
-4. **Student Functionality:**
-   - View live tests.
-   - Submit test answers.
-   - View scores once released.
-5. **Automatic Answer Evaluation:**
-   - Integrates with Google Generative AI to assess subjective questions.
-6. **Test Management:**
-   - Store and manage tests and questions using MongoDB.
+## Key Features ✨
+- **Create & Manage Subjective Tests**: Teachers can easily create tests with subjective questions that require in-depth written responses.
+- **AI-Powered Evaluation**: Uses Google Generative AI to automate the evaluation of subjective answers, ensuring reliable and unbiased results.
+- **User Roles & Access Control**:
+  - **Admin**: Manages user roles, monitors platform activities, and oversees the test data.
+  - **Teacher**: Creates and manages tests, assigns them to students, and reviews AI-generated evaluations.
+  - **Student**: Takes assigned tests and reviews their AI-generated scores and feedback.
+- **Responsive User Interface**: A clean and intuitive interface built using EJS templates and Node.js/Express on the backend.
 
-## **Tech Stack**
-- **Frontend**: React.js
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB
-- **AI Integration**: Google Generative AI (Gemini)
-- **Authentication**: JWT (JSON Web Tokens)
-- **Session Management**: express-session
-- **Other Libraries**: Mongoose, bcrypt.js (for password hashing)
+## Technology Stack 💻
+- **Frontend**: EJS (Embedded JavaScript) for templating and creating dynamic, responsive views.
+- **Backend**: Node.js and Express.js for handling server-side logic and routing.
+- **Database**: MongoDB for storing user data, test information, and responses.
+- **AI Integration**: Google Generative AI for automated subjective test evaluation.
+- **Authentication**: JWT-based authentication and role-based access control (RBAC) for secure access and management.
 
-## **Getting Started**
-### **Prerequisites**
-Make sure you have the following installed on your system:
-- [Node.js](https://nodejs.org/) (v14+)
-- [MongoDB](https://www.mongodb.com/) (local or cloud-based)
-- [Git](https://git-scm.com/) (optional, for cloning the repository)
+## Getting Started 🚀
+### Prerequisites
+- Node.js installed on your system
+- MongoDB set up locally or a cloud-based MongoDB instance
 
-### **Installation**
-1. Clone the repository:
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/ai-based-test-platform.git
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd ai-based-test-platform
+   ```
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-    ```bash
-    git clone https://github.com/yourusername/ai-based-quiz-platform.git
-    cd ai-based-quiz-platform
-    ```
+4. **Set up environment variables:**
+   Create a `.env` file in the root directory and configure the following variables:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_key
+   GOOGLE_AI_API_KEY=your_google_generative_ai_key
+   ```
 
-2. Install dependencies:
+5. **Run the application:**
+   ```bash
+   node app.js
+   ```
 
-    ```bash
-    npm install
-    ```
+6. **Open your browser and navigate to:**
+   ```
+   http://localhost:3000
+   ```
 
-3. Create a `.env` file in the root directory and add the necessary environment variables (see [Environment Variables](#environment-variables)).
+## Usage Instructions
+1. **Admin Access:**
+   - Manage users and roles.
+   - Monitor platform activities.
 
-4. Start your MongoDB server (or use a cloud-based MongoDB instance).
+2. **Teacher Access:**
+   - Create and configure subjective tests.
+   - Assign tests to students.
+   - Review and refine AI-generated evaluations.
 
-## **Running the Application**
-1. Start the server:
+3. **Student Access:**
+   - Take tests assigned by teachers.
+   - View AI-evaluated results and feedback.
 
-    ```bash
-    npm start
-    ```
-
-2. Open [http://localhost:3000](http://localhost:3000) in your browser to access the application.
-
-## **Folder Structure**
+## Project Structure 📂
 ```
-ai-based-quiz-platform/
-├── public/                  # Static assets
-├── src/
-│   ├── models/              # Mongoose models
-│   ├── routes/              # Express route handlers
-│   ├── controllers/         # Controllers for handling business logic
-│   ├── middlewares/         # Custom middleware functions
-│   ├── views/               # EJS templates for server-side rendering
-│   └── index.js             # Main server entry point
-├── .env                     # Environment variables
-├── package.json             # Node.js dependencies and scripts
-└── README.md                # Project documentation
+ai-based-test-platform/
+├── views/           # EJS templates for frontend views
+├── routes/          # Express routes for different user roles
+├── controllers/     # Logic for handling requests and responses
+├── models/          # Mongoose models for database schema
+├── public/          # Static files like CSS and images
+├── app.js           # Main server file
+├── .env             # Environment variables
+└── README.md        # Project documentation
 ```
 
-## **API Routes**
-### **Authentication**
-- `POST /signup` – Register a new user.
-- `POST /login` – Authenticate and log in a user.
+## Contributing 🤝
+Contributions are welcome! If you have suggestions for improving the platform or want to report a bug, feel free to open an issue or submit a pull request.
 
-### **Teacher Routes**
-- `GET /teacher` – Teacher dashboard.
-- `POST /teacher/create-test` – Create a new test.
-- `POST /teacher/add-question` – Add questions to a test.
-- `GET /teacher/view-tests` – View all tests created by the teacher.
-- `POST /teacher/toggle-test-live` – Toggle the availability of a test.
-- `POST /teacher/send-score` – Release scores for a student.
+## License 📜
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### **Student Routes**
-- `GET /student` – Student dashboard.
-- `GET /student/live-tests` – View live tests.
-- `POST /student/submit` – Submit test answers.
-- `GET /student/view-scores` – View scores once released.
+## Contact 📧
+For any questions or suggestions, feel free to reach out:
+- **Email**: vanshnagpal0123@gmail.com
+- **GitHub**: https://github.com/vanshnagpal1902
 
-## **Environment Variables**
-Create a `.env` file in the root directory and add the following environment variables:
-
-```
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/quiz-platform
-JWT_SECRET=your_jwt_secret_key
-SESSION_SECRET=your_session_secret_key
-GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
-```
-
-## **Future Improvements**
-- **Improved User Interface:** Enhance the UI with React components for better user experience.
-- **Additional Role Management:** Add more roles such as 'Principal' or 'Parent' for monitoring student performance.
-- **Notifications:** Integrate email notifications for test updates and score releases.
-- **Performance Optimization:** Optimize database queries and session handling.
-- **Comprehensive Test Analysis:** Include more detailed reports and analytics for teachers.
-
-## **Contributing**
-Contributions are welcome! Please follow these steps to contribute:
-1. Fork the repository.
-2. Create a new feature branch (`feature-branch-name`).
-3. Commit your changes (`git commit -m 'Add some feature'`).
-4. Push to the branch (`git push origin feature-branch-name`).
-5. Open a Pull Request.
-
-## **License**
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
----
