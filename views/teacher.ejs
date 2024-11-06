@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/teacher-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, <%= user.username %></h1>
+        
+        <div class="button-container">
+            <a href="/teacher/create-test" class="button"><i data-feather="plus-circle"></i> Create New Test</a>
+            <a href="/logout" class="button"><i data-feather="log-out"></i> Logout</a>
+        </div>
+
+        <div id="testList">
+            <h2>Your Tests</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test ID</th>
+                        <th>Test Code</th>
+                        <th>Subject</th>
+                        <th>Duration</th>
+                        <th>Questions</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="testTableBody">
+                    <!-- Test data will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function fetchTests() {
+            fetch('/teacher/tests')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const testTableBody = document.getElementById('testTableBody');
+                        testTableBody.innerHTML = '';
+                        data.tests.forEach(test => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${test._id}</td>
+                                <td>${test.code}</td>
+                                <td>${test.subject}</td>
+                                <td>${test.duration} minutes</td>
+                                <td>${test.questionCount}</td>
+                                <td>
+                                    <button class="toggle-button ${test.isLive ? '' : 'inactive'}" onclick="toggleTestStatus('${test._id}', this)">
+                                        ${test.isLive ? 'Active' : 'Inactive'}
+                                    </button>
+                                </td>
+                                <td>
+                                    <a href="/teacher/edit-test/${test._id.substring(1)}" class="button"><i data-feather="edit"></i> Edit</a>
+                                    <a href="/teacher/test-scores/${encodeURIComponent(test._id)}" class="button"><i data-feather="bar-chart-2"></i> View Scores</a>
+                                    <button onclick="deleteTest('${test._id}')" class="button"><i data-feather="trash-2"></i> Delete</button>
+                                </td>
+                            `;
+                            testTableBody.appendChild(row);
+                        });
+                        feather.replace();
+                    } else {
+                        console.error('Failed to fetch tests:', data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function toggleTestStatus(testId, button) {
+            fetch('/teacher/toggle-test-live', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ testId: testId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.textContent = data.isLive ? 'Active' : 'Inactive';
+                    button.classList.toggle('inactive', !data.isLive);
+                } else {
+                    console.error('Failed to toggle test status:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function deleteTest(testId) {
+            if (confirm('Are you sure you want to delete this test?')) {
+                fetch(`/teacher/delete-test/${encodeURIComponent(testId)}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchTests(); // Refresh the test list
+                    } else {
+                        console.error('Failed to delete test:', data.message);
+                        alert('Failed to delete test: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the test');
+                });
+            }
+        }
+
+        // Fetch tests when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTests();
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

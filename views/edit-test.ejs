@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Test - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/edit-test-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Test</h1>
+        <form id="editTestForm">
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" value="<%= test.subject %>" required>
+            
+            <label for="duration">Duration (minutes):</label>
+            <input type="number" id="duration" name="duration" value="<%= test.duration %>" required>
+            
+            <label for="questionCount">Number of Questions:</label>
+            <input type="number" id="questionCount" name="questionCount" value="<%= test.questionCount %>" required min="1" max="10">
+            
+            <div id="questionList">
+                <% for (let i = 0; i < test.questionCount; i++) { %>
+                    <div class="question">
+                        <label for="question<%= i + 1 %>">Question <%= i + 1 %>:</label>
+                        <textarea id="question<%= i + 1 %>" name="questions[]" required><%= test.questions[i] || '' %></textarea>
+                    </div>
+                <% } %>
+            </div>
+            
+            <button type="submit" id="updateTestButton">
+                <i data-feather="save"></i> Update Test
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const questionCountInput = document.getElementById('questionCount');
+        const questionList = document.getElementById('questionList');
+        const updateTestButton = document.getElementById('updateTestButton');
+
+        questionCountInput.addEventListener('change', updateQuestionBoxes);
+
+        function updateQuestionBoxes() {
+            const count = parseInt(questionCountInput.value);
+            const currentQuestions = Array.from(questionList.querySelectorAll('textarea')).map(textarea => textarea.value);
+            questionList.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <label for="question${i + 1}">Question ${i + 1}:</label>
+                    <textarea id="question${i + 1}" name="questions[]" required>${currentQuestions[i] || ''}</textarea>
+                `;
+                questionList.appendChild(questionDiv);
+            }
+        }
+
+        document.getElementById('editTestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const testData = {
+                subject: formData.get('subject'),
+                duration: formData.get('duration'),
+                questionCount: formData.get('questionCount'),
+                questions: formData.getAll('questions[]')
+            };
+
+            console.log('Submitting test data:', testData);
+
+            fetch('/teacher/update-test/<%= testId.substring(1) %>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(testData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Test updated successfully!');
+                    window.location.href = '/teacher';
+                } else {
+                    alert('Failed to update test: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the test: ' + error.message);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

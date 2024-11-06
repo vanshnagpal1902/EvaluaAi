@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Answers - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/student-answers-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Answers</h1>
+        <div class="test-info">
+            <h2><%= test.subject %> Test</h2>
+            <p><strong>Test ID:</strong> <%= testId %></p>
+            <p><strong>Student:</strong> <%= studentName %></p>
+        </div>
+        <div class="answer-section">
+            <% test.questions.forEach((question, index) => { %>
+                <div class="question">
+                    <h3>Question <%= index + 1 %>:</h3>
+                    <p><%= question %></p>
+                    <div class="answer">
+                        <strong>Answer:</strong>
+                        <p><%= studentAnswers[index] || 'No answer provided' %></p>
+                    </div>
+                    <div class="score">
+                        <strong>Score:</strong>
+                        <input type="number" id="score<%= index %>" value="<%= testScores[index] || 0 %>" min="0" max="10">
+                        <button class="button update-score-button" onclick="updateScore('<%= testId %>', '<%= studentName %>', <%= index %>)">
+                            <i data-feather="save"></i> Update Score
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <a href="/teacher/test-scores/<%= encodeURIComponent(testId) %>" class="button">
+            <i data-feather="arrow-left"></i> Back to Test Scores
+        </a>
+    </div>
+
+    <script>
+        function updateScore(testId, studentName, questionIndex) {
+            const newScore = document.getElementById(`score${questionIndex}`).value;
+            fetch('/teacher/update-score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ testId, studentName, questionIndex, newScore })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Score updated successfully');
+                } else {
+                    alert('Failed to update score: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the score');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Tests - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/teacher">Dashboard</a></li>
+            <li><a href="/teacher/create-test">Create Test</a></li>
+            <li><a href="/teacher/view-tests">View Tests</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Your Tests</h1>
+        <ul id="testListItems">
+            <% for (const [id, test] of Object.entries(tests)) { %>
+                <li>
+                    <%= test.subject %> - <%= test.duration %> minutes - <%= test.questionCount %> questions
+                    <button onclick="toggleTestLive('<%= id %>')"><%= test.isLive ? 'Make Offline' : 'Make Live' %></button>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+    <script src="/js/view-tests.js"></script>
+</body>
+</html>

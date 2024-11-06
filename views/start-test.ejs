@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Test - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/start-test-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1><%= test.subject %> Test</h1>
+        <div class="test-info">
+            <p>Duration: <%= test.duration %> minutes</p>
+            <p>Number of Questions: <%= test.questionCount %></p>
+            <p>Total Marks: <%= test.totalMarks %></p>
+            <h3>Time Remaining: <span id="timer"></span></h3>
+        </div>
+        <form id="testForm" action="/student/submit" method="POST">
+            <input type="hidden" name="testId" value="<%= test._id %>">
+            <% test.questions.forEach((question, index) => { %>
+                <div class="question">
+                    <p><strong>Question <%= index + 1 %>:</strong> <%= question %></p>
+                    <textarea name="answers[]" rows="4" cols="50" required></textarea>
+                </div>
+            <% }); %>
+            <button type="submit" class="button">
+                <i data-feather="check-circle"></i>
+                Submit Test
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timeLeft = <%= test.duration %> * 60; // Convert minutes to seconds
+        const timerDisplay = document.getElementById('timer');
+        const testForm = document.getElementById('testForm');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('Time\'s up! Submitting your test.');
+                testForm.submit();
+            }
+            timeLeft--;
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call to set the timer immediately
+
+        // Prevent form submission if time is up
+        testForm.addEventListener('submit', function(event) {
+            if (timeLeft <= 0) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Test Scores - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/teacher">Dashboard</a></li>
+            <li><a href="/teacher/create-test">Create Test</a></li>
+            <li><a href="/teacher/view-test-scores">View Test Scores</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Test Scores</h1>
+        <ul id="testScoresList">
+            <% for (const [id, test] of Object.entries(tests)) { %>
+                <li>
+                    <%= test.subject %> - <%= test.duration %> minutes - <%= test.questionCount %> questions
+                    <button onclick="viewTestScores('<%= id %>')">View Scores</button>
+                    <button onclick="toggleTestLive('<%= id %>')"><%= test.isLive ? 'Make Offline' : 'Make Live' %></button>
+                </li>
+            <% } %>
+        </ul>
+        <div id="testScoresDetail" style="display: none;">
+            <h2 id="selectedTestTitle"></h2>
+            <ul id="testScoresDetailList"></ul>
+        </div>
+    </div>
+    <script src="/js/view-test-scores.js"></script>
+</body>
+</html>

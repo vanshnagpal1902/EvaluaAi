@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Scores - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/student-view-scores-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Test Scores</h1>
+        
+        <div class="button-container">
+            <a href="/student" class="button">
+                <i data-feather="arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div id="scoresList">
+            <% if (Object.keys(scores).length === 0) { %>
+                <p>You haven't taken any tests yet.</p>
+            <% } else { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test ID</th>
+                            <th>Subject</th>
+                            <th>Score</th>
+                            <th>Attempted At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (const [testId, testData] of Object.entries(scores)) { %>
+                            <tr class="attempted-test">
+                                <td><%= testId %></td>
+                                <td><%= testData.subject %></td>
+                                <td class="score <%= testData.scores.reduce((a, b) => a + b, 0) / (testData.scores.length * 10) >= 0.6 ? 'high-score' : 'low-score' %>">
+                                    <%= testData.scores.reduce((a, b) => a + b, 0) %> / <%= testData.scores.length * 10 %>
+                                </td>
+                                <td><%= new Date(testData.attemptedAt).toLocaleString() %></td>
+                                <td>
+                                    <a href="/student/detailed-score/<%= encodeURIComponent(testId) %>" class="button">
+                                        <i data-feather="eye"></i> View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

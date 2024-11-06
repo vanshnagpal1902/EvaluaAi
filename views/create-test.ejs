@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Test - EvaluaAI</title>
+    <link rel="stylesheet" href="/css/create-test-styles.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Test</h1>
+        <form id="createTestForm">
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required>
+            
+            <label for="duration">Duration (minutes):</label>
+            <input type="number" id="duration" name="duration" required>
+            
+            <label for="questionCount">Number of Questions:</label>
+            <input type="number" id="questionCount" name="questionCount" required min="1" max="10">
+            
+            <div id="questionList"></div>
+            
+            <button type="submit" id="createTestButton" disabled>
+                <i data-feather="check-circle"></i> Create Test
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const questionCountInput = document.getElementById('questionCount');
+        const questionList = document.getElementById('questionList');
+        const createTestButton = document.getElementById('createTestButton');
+
+        questionCountInput.addEventListener('change', generateQuestionBoxes);
+
+        function generateQuestionBoxes() {
+            const count = parseInt(questionCountInput.value);
+            questionList.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <label for="question${i}">Question ${i}:</label>
+                    <textarea id="question${i}" name="questions[]" required></textarea>
+                `;
+                questionList.appendChild(questionDiv);
+            }
+            
+            feather.replace();
+            checkAllQuestionsFilledAndEnableButton();
+        }
+
+        function checkAllQuestionsFilledAndEnableButton() {
+            const allTextareas = questionList.querySelectorAll('textarea');
+            const allFilled = Array.from(allTextareas).every(textarea => textarea.value.trim() !== '');
+            createTestButton.disabled = !allFilled;
+        }
+
+        questionList.addEventListener('input', checkAllQuestionsFilledAndEnableButton);
+
+        document.getElementById('createTestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const testData = {
+                subject: formData.get('subject'),
+                duration: formData.get('duration'),
+                questionCount: formData.get('questionCount'),
+                questions: formData.getAll('questions[]')
+            };
+
+            fetch('/teacher/create-test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(testData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Test created successfully! Test ID: ${data.testId}, Test Code: ${data.testCode}`);
+                    window.location.href = '/teacher';
+                } else {
+                    alert('Failed to create test: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating the test');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
